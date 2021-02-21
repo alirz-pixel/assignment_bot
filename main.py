@@ -8,11 +8,10 @@ from selenium.webdriver.chrome.options import *
 import discord
 import asyncio
 import time
+import os
 
 client = discord.Client()
 prefix = '!'
-
-token = "ODEyMzAzOTMyMjg5MzE4OTMy.YC-y_Q.-GvF9D-47JzrrMHsBeZK_UaUWzE"
 
 @client.event
 async def on_ready():
@@ -393,6 +392,6 @@ async def on_message(message):
 
 
 
-
-client.run(token)
+access_token = os.environ['BOT_TOKEN']
+client.run(access_token)
 
