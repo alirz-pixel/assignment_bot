@@ -99,20 +99,20 @@ async def on_message(message):
                     #크롤링 옵션
                     chrome_options = webdriver.ChromeOptions()
                     chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-                    #chrome_options.add_argument("--headless")
+                    chrome_options.add_argument("--headless")
                     chrome_options.add_argument("--disable-dev-shm-usage")
                     chrome_options.add_argument("--no-sandbox")
                     browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     browser.get('https://search.naver.com/search.naver?ie=UTF-8&sm=whl_hty&query=%EB%A7%9E%EC%B6%A4%EB%B2%95+%EA%B2%80%EC%82%AC%EA%B8%B0')
 
                     WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[1]/textarea')))
-                    time.sleep(0.4)
+                    time.sleep(0.1)
                     for ready in ready_list:
                         browser.find_element_by_xpath('//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[1]/textarea').send_keys(Keys.CONTROL, "a")
                         browser.find_element_by_xpath('//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[1]/textarea').send_keys(ready)
                         browser.find_element_by_xpath('//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[2]/button').click()
 
-                        time.sleep(1)
+                        time.sleep(2)
                         soup = BeautifulSoup(browser.page_source, 'html.parser')
                         st = soup.select("p._result_text.stand_txt")[0].text
                         new_str += st.replace('. ', '.\n')
