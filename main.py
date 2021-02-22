@@ -337,7 +337,7 @@ async def on_message(message):
                     chrome_options.add_argument("--headless")
                     chrome_options.add_argument("--disable-dev-shm-usage")
                     chrome_options.add_argument("--no-sandbox")
-                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+                    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     driver.get('https://papago.naver.com/')
 
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inp_url"]')))
