@@ -96,9 +96,12 @@ async def on_message(message):
 
                     new_str = ''
                     #크롤링 옵션
-                    options = Options()
-                    options.headless = True
-                    browser = webdriver.Chrome(executable_path='./chromedriver.exe', options=options)
+                    chrome_options = webdriver.ChromeOptions()
+                    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+                    chrome_options.add_argument("--headless")
+                    chrome_options.add_argument("--disable-dev-shm-usage")
+                    chrome_options.add_argument("--no-sandbox")
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     browser.get('https://search.naver.com/search.naver?ie=UTF-8&sm=whl_hty&query=%EB%A7%9E%EC%B6%A4%EB%B2%95+%EA%B2%80%EC%82%AC%EA%B8%B0')
 
                     WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[1]/textarea')))
@@ -220,9 +223,12 @@ async def on_message(message):
                     timemsg = await message.channel.send(embed=timeembed)
 
                     #크롤링 옵션
-                    options = Options()
-                    options.headless = True
-                    browser = webdriver.Chrome(executable_path='./chromedriver.exe', options=options)
+                    chrome_options = webdriver.ChromeOptions()
+                    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+                    chrome_options.add_argument("--headless")
+                    chrome_options.add_argument("--disable-dev-shm-usage")
+                    chrome_options.add_argument("--no-sandbox")
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     browser.get(KOR_EN)
 
                     #텍스트 번역
@@ -268,9 +274,12 @@ async def on_message(message):
                     timemsg = await message.channel.send(embed=timeembed)
 
                     #크롤링 옵션
-                    options = Options()
-                    options.headless = True
-                    browser = webdriver.Chrome(executable_path='./chromedriver.exe', options=options)
+                    chrome_options = webdriver.ChromeOptions()
+                    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+                    chrome_options.add_argument("--headless")
+                    chrome_options.add_argument("--disable-dev-shm-usage")
+                    chrome_options.add_argument("--no-sandbox")
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     browser.get(EN_KOR)
 
                     #텍스트 번역
@@ -322,9 +331,13 @@ async def on_message(message):
                     )
                     timemsg = await message.channel.send(embed=timeembed)
 
-                    options = Options()
-                    options.headless = True
-                    driver = webdriver.Chrome(executable_path='./chromedriver.exe', options=options)
+                    #크롤링 옵션
+                    chrome_options = webdriver.ChromeOptions()
+                    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+                    chrome_options.add_argument("--headless")
+                    chrome_options.add_argument("--disable-dev-shm-usage")
+                    chrome_options.add_argument("--no-sandbox")
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     driver.get('https://papago.naver.com/')
 
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inp_url"]')))
