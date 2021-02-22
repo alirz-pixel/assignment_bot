@@ -111,7 +111,7 @@ async def on_message(message):
                         browser.find_element_by_xpath('//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[1]/textarea').send_keys(ready)
                         browser.find_element_by_xpath('//*[@id="grammar_checker"]/div/div[2]/div[1]/div[1]/div/div[2]/button').click()
 
-                        time.sleep(0.4)
+                        time.sleep(1)
                         soup = BeautifulSoup(browser.page_source, 'html.parser')
                         st = soup.select("p._result_text.stand_txt")[0].text
                         new_str += st.replace('. ', '.\n')
