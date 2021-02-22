@@ -11,7 +11,6 @@ import time
 import os
 
 client = discord.Client()
-prefix = '!'
 
 @client.event
 async def on_ready():
