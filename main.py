@@ -344,14 +344,15 @@ async def on_message(message):
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inp_url"]')))
                     driver.find_element_by_xpath('//*[@id="inp_url"]').send_keys(site_trans_input.content)
 
-                    time.sleep(1)
+                    time.sleep(0.4)
                     driver.find_element_by_xpath('//*[@id="inp_url"]').send_keys(Keys.ENTER)
+                    time.sleep(2)
                     trans_site = driver.current_url
 
                     await timemsg.delete()
                     Papago_ling_Embed = discord.Embed(
-                        title="파파고 번역기",
-                        description='[제목을 누르면 한글 변환 사이트로 접속](trans_site)',
+                        title="한글 변환된 사이트로 접속하기",
+                        #description='[제목을 누르면 한글 변환 사이트로 접속](trans_site)',
                         url = trans_site,
                         colour=discord.Colour.green()
                     )
