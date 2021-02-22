@@ -18,8 +18,8 @@ async def on_ready():
 
     print(client.user.name)
     print('성공적으로 봇이 시작되었습니다.')
-    now = time.strftime('%c', time.localtime(time.time()))
-    game = discord.Game(now)
+    #now = time.strftime('%c', time.localtime(time.time()))
+    game = discord.Game(명령어 : !과제   )
     await client.change_presence(status=discord.Status.online, activity=game)
 
 @client.event
