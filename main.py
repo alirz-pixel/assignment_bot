@@ -329,6 +329,7 @@ async def on_message(message):
                         description="-----------------------------------\n잠시만 기다려주세요!\n번역하는데 시간이 걸릴 수 있습니다.\n-----------------------------------",
                         color=0xFF9900
                     )
+                    timeembed.set_footer(text = '소요시간 : 최소 1.5초')
                     timemsg = await message.channel.send(embed=timeembed)
 
                     #크롤링 옵션
@@ -338,14 +339,16 @@ async def on_message(message):
                     chrome_options.add_argument("--disable-dev-shm-usage")
                     chrome_options.add_argument("--no-sandbox")
                     driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-                    driver.get('https://papago.naver.com/')
+                    driver.get('https://papago.naver.net/website?locale=ko&source=auto&target=ko&url=www.naver.com%2F')
 
-                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="inp_url"]')))
-                    driver.find_element_by_xpath('//*[@id="inp_url"]').send_keys(site_trans_input.content)
+                    input_box = '//*[@id="root"]/div/div[4]/div/div[1]/div/div[2]/div/form/input[1]'
+                    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, input_box)))
+                    driver.find_element_by_xpath(input_box).send_keys(Keys.CONTROL, "a")
 
-                    time.sleep(0.4)
-                    driver.find_element_by_xpath('//*[@id="inp_url"]').send_keys(Keys.ENTER)
-                    time.sleep(2)
+                    driver.find_element_by_xpath(input_box).send_keys(site_trans_input.content)
+                    time.sleep(0.1)
+                    driver.find_element_by_xpath(input_box).send_keys(Keys.ENTER)
+                    time.sleep(1.4)
                     trans_site = driver.current_url
 
                     await timemsg.delete()
