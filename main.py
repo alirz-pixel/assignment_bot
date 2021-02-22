@@ -351,8 +351,8 @@ async def on_message(message):
 
                     await timemsg.delete()
                     Papago_ling_Embed = discord.Embed(
-                        title="한글 변환된 사이트로 접속하기",
-                        #description='[제목을 누르면 한글 변환 사이트로 접속](trans_site)',
+                        title="파파고 번역기",
+                        description='제목을 누르면 한글 변환 사이트로 접속',
                         url = trans_site,
                         colour=discord.Colour.green()
                     )
