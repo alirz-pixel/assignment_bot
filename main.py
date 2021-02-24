@@ -390,7 +390,7 @@ async def on_message(message):
     if message.content.startswith("!그래프") or message.content.startswith("!graph"):
         choose = discord.Embed(
             title="그래프 툴",
-            description='-----------------------------------\n1 : 그래프 그리기 실행 \n2 : desmos 링크 출력하기\n-----------------------------------',
+            description='-----------------------------------\n1 : 그래프 그리기 실행 [업데이트 ]\n2 : desmos 링크 출력하기\n-----------------------------------',
             color=0xFF9900
         )
         choose.set_footer(text="를 입력해주세요. \t (제한시간 : 20초)")
@@ -407,7 +407,7 @@ async def on_message(message):
                     description='-----------------------------------\n함수를 적어주세요.\n-----------------------------------',
                     color=0xFF9900
                 )
-                FxEmbed.set_footer(text="(제한시간 : 60초) ")
+                FxEmbed.set_footer(text="[추후 업데이트 예정] (제한시간 : 60초) ")
                 Fx_msg = await message.channel.send(embed=FxEmbed)
 
                 try:
