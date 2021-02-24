@@ -23,22 +23,29 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    # 명령어를 적은 유저 + 같은 채널인지
+    def check(m):
+        return m.author == message.author and m.channel == message.channel
 
+    # 타임 아웃 임베드 생성
+    def Create_Timeout_Embed(count):
+        TimeoutEmbed = discord.Embed(
+            title="입력 시간이 초과되었습니다.",
+            color=0xFF9900
+        )
+
+        if count == 1:
+            TimeoutEmbed.set_footer(text="다시 시도하려면 !맞춤법을 입력해주세요.", )
+        elif count == 2:
+            TimeoutEmbed.set_footer(text="다시 시도하려면 !파파고를 입력해주세요.", )
+        elif count == 3:
+            TimeoutEmbed.set_footer(text="다시 시도하려면 !그래프를 입력해주세요.", )
+
+        return TimeoutEmbed
+    
+    
     #맞춤법 검사기 사이트 오늘할 작업
     if message.content.startswith('!맞춤법'):
-        # 타임 아웃 임베드 생성
-        def Create_Timeout_Embed():
-            TimeoutEmbed = discord.Embed(
-                title="입력 시간이 초과되었습니다.",
-                color=0xFF9900
-            )
-            TimeoutEmbed.set_footer(text="다시 시도하려면 !맞춤법를 입력해주세요.", )
-            return TimeoutEmbed
-
-            # 명령어를 적은 유저 + 같은 채널인지
-        def check(m):
-            return m.author == message.author and m.channel == message.channel
-
         #!맞춤법 커맨드 시작
         choose = discord.Embed(
             title="맞춤법 검사기",
@@ -132,7 +139,7 @@ async def on_message(message):
 
                 except asyncio.exceptions.TimeoutError:
                     await Transmsg.delete()
-                    await message.channel.send(embed=Create_Timeout_Embed())
+                    await message.channel.send(embed=Create_Timeout_Embed(1))
 
             elif cmsg.content == '2':
                 await choosemsg.delete()
@@ -158,19 +165,10 @@ async def on_message(message):
 
         except asyncio.exceptions.TimeoutError:
             await choosemsg.delete()
-            await message.channel.send(embed=Create_Timeout_Embed())
+            await message.channel.send(embed=Create_Timeout_Embed(1))
 
     #파파고 크롤링
     if message.content.startswith("!파파고"):
-        # 타임 아웃 임베드 생성
-        def Create_Timeout_Embed():
-            TimeoutEmbed = discord.Embed(
-                title="입력 시간이 초과되었습니다.",
-                color=0xFF9900
-            )
-            TimeoutEmbed.set_footer(text="다시 시도하려면 !파파고를 입력해주세요.", )
-            return TimeoutEmbed
-
         # 원하는 번역 입력
         def Create_trans_Embed(isture):
             if isture:
@@ -188,10 +186,6 @@ async def on_message(message):
                 )
             TransEmbed.set_footer(text="(제한시간 : 60초)")
             return TransEmbed
-
-        # 명령어를 적은 유저 + 같은 채널인지
-        def check(m):
-            return m.author == message.author and m.channel == message.channel
 
         KOR_EN = "https://papago.naver.com/?sk=ko&tk=en"
         EN_KOR = "https://papago.naver.com/?sk=en&tk=ko&hn=0"
@@ -256,7 +250,7 @@ async def on_message(message):
 
                 except asyncio.exceptions.TimeoutError:
                     await input_trans_msg.delete()
-                    await message.channel.send(embed=Create_Timeout_Embed())
+                    await message.channel.send(embed=Create_Timeout_Embed(2))
 
             elif cmsg.content == '2':
                 await choosemsg.delete()
@@ -307,7 +301,7 @@ async def on_message(message):
 
                 except asyncio.exceptions.TimeoutError:
                     await input_trans_msg.delete()
-                    await message.channel.send(embed=Create_Timeout_Embed())
+                    await message.channel.send(embed=Create_Timeout_Embed(2))
 
             elif cmsg.content == '3':
                 await choosemsg.delete()
@@ -365,7 +359,7 @@ async def on_message(message):
 
                 except asyncio.exceptions.TimeoutError:
                     await input_trans_msg.delete()
-                    await message.channel.send(embed=Create_Timeout_Embed())
+                    await message.channel.send(embed=Create_Timeout_Embed(2))
 
             elif cmsg.content == '4':
                 Papago_ling_Embed = discord.Embed(
@@ -389,9 +383,78 @@ async def on_message(message):
 
         except asyncio.exceptions.TimeoutError:
             await choosemsg.delete()
-            await message.channel.send(embed=Create_Timeout_Embed())
+            await message.channel.send(embed=Create_Timeout_Embed(2))
 
 
+    #그래프
+    if message.content.startswith("!그래프") or message.content.startswith("!graph"):
+        choose = discord.Embed(
+            title="그래프 툴",
+            description='-----------------------------------\n1 : 그래프 그리기 실행 \n2 : desmos 링크 출력하기\n-----------------------------------',
+            color=0xFF9900
+        )
+        choose.set_footer(text="를 입력해주세요. \t (제한시간 : 20초)")
+        choosemsg = await message.channel.send(embed=choose)
+
+        try:
+            cmsg = await client.wait_for("message", check=check, timeout=20)
+
+            if cmsg.content == '1':
+                await choosemsg.delete()
+
+                FxEmbed = discord.Embed(
+                    title="그래프 툴",
+                    description='-----------------------------------\n함수를 적어주세요.\n-----------------------------------',
+                    color=0xFF9900
+                )
+                FxEmbed.set_footer(text="(제한시간 : 60초) ")
+                Fx_msg = await message.channel.send(embed=FxEmbed)
+
+                try:
+                    input_msg = await client.wait_for("message", check=check, timeout=60)
+                    await Fx_msg.delete()
+
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"))
+                    browser.get('https://www.geogebra.org/calculator')
+
+                    time.sleep(3)
+                    browser.find_element_by_xpath('//*[@id="gwt-uid-6"]/div/div[2]/div[1]').click()
+
+                    time.sleep(1)
+                    browser.find_element_by_xpath('//*[@id="hiddenCopyPasteLatexArea0"]').send_keys(input_msg.content)
+
+                except asyncio.exceptions.TimeoutError:
+                    await Fx_msg.delete()
+                    await message.channel.send(embed=Create_Timeout_Embed(3))
+
+            elif cmsg.content == '2':
+                await choosemsg.delete()
+
+                embed = discord.Embed(
+                    title="그래프 툴",
+                    description='[desmos 사이트](https://www.desmos.com/calculator?lang=ko "그래프 그려주는 사이트입니다.")',
+                    colour=discord.Colour.green()
+                )
+                embed.set_thumbnail(
+                    url='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHEn8sS7GGlolMQC4MTli3Y7vVxQyKIdG7ow&usqp=CAU')
+
+                await message.channel.send(embed=embed)
+
+            else:
+                await choosemsg.delete()
+
+                input_Error_Embed = discord.Embed(
+                    title="(입력 오류)\n범위 내 숫자만 선택 해주세요.",
+                    color=0xFF9900
+                )
+                input_Error_Embed.set_footer(text="다시 시도하려면 !그래프를 입력해주세요.", )
+                await message.channel.send(embed=input_Error_Embed)
+
+        except asyncio.exceptions.TimeoutError:
+            await choosemsg.delete()
+            await message.channel.send(embed=Create_Timeout_Embed(3))            
+            
+            
     if message.content.startswith("!과제"):
         command_embed = discord.Embed(
             title = '봇 명령어 목록',
