@@ -414,9 +414,11 @@ async def on_message(message):
                     input_msg = await client.wait_for("message", check=check, timeout=60)
                     await Fx_msg.delete()
 
-                    options = Options()
-                    options.headless = False
-                    browser = webdriver.Chrome(executable_path='./chromedriver.exe', options=options)
+                    chrome_options = webdriver.ChromeOptions()
+                    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+                    chrome_options.add_argument("--disable-dev-shm-usage")
+                    chrome_options.add_argument("--no-sandbox")
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
                     browser.get('https://www.geogebra.org/calculator')
 
                     time.sleep(3)
