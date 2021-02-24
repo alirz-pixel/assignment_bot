@@ -414,10 +414,12 @@ async def on_message(message):
                     input_msg = await client.wait_for("message", check=check, timeout=60)
                     await Fx_msg.delete()
 
-                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"))
+                    options = Options()
+                    options.headless = False
+                    browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=options)
                     browser.get('https://www.geogebra.org/calculator')
 
-                    time.sleep(3)
+                    time.sleep(5)
                     browser.find_element_by_xpath('//*[@id="gwt-uid-6"]/div/div[2]/div[1]').click()
 
                     time.sleep(1)
