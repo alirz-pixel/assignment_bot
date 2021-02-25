@@ -40,6 +40,8 @@ async def on_message(message):
             TimeoutEmbed.set_footer(text="다시 시도하려면 !파파고를 입력해주세요.", )
         elif count == 3:
             TimeoutEmbed.set_footer(text="다시 시도하려면 !그래프를 입력해주세요.", )
+        elif count == 4:
+            TimeoutEmbed.set_footer(text="다시 시도하려면 !단위변환을 입력해주세요.", )
 
         return TimeoutEmbed
     
@@ -456,7 +458,169 @@ async def on_message(message):
             await choosemsg.delete()
             await message.channel.send(embed=Create_Timeout_Embed(3))            
             
-            
+    #단위 변환
+    if message.content.startswith('!단위변환') or message.content.startswith('!변환') or message.content.startswith('!단위'):
+        choose = discord.Embed(
+            title="단위 변환",
+            description='-----------------------------------\n변환하고 싶은 목록을 입력해주세요.\n'
+                        '\n1. 길이 \n 2. 넓이 \n 3. 무게 \n 4. 부피 \n 5. 온도 \n 6. 압력 \n 7. 속도 \n 8. 연비 \n 9. 데이터양 \n'
+                        '\n-----------------------------------',
+            color=0xFF9900
+        )
+        choose.set_footer(text="를 입력해주세요. \t (제한시간 : 20초)")
+        choosemsg = await message.channel.send(embed=choose)
+
+        try:
+            cmsg = await client.wait_for("message", check=check, timeout=20)
+
+            await choosemsg.delete()
+            url = ['',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EA%B8%B8%EC%9D%B4%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EB%84%93%EC%9D%B4%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EB%AC%B4%EA%B2%8C%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EB%B6%80%ED%94%BC%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EC%98%A8%EB%8F%84%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EC%95%95%EB%A0%A5%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EC%86%8D%EB%8F%84%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EC%97%B0%EB%B9%84%EB%B3%80%ED%99%98',
+                   'https://search.naver.com/search.naver?where=nexearch&sm=tab_etc&mra=blM0&query=%EB%8D%B0%EC%9D%B4%ED%84%B0%EC%96%91%EB%B3%80%ED%99%98']
+
+            timeembed = discord.Embed(
+                title="단위 변환",
+                description="-----------------------------------\n잠시만 기다려주세요!\n단위를 불러오는데 시간이 걸릴 수 있습니다.\n-----------------------------------",
+                color=0xFF9900
+            )
+            timemsg = await message.channel.send(embed=timeembed)
+
+            #크롤링 시작
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--no-sandbox")
+            browser = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+            browser.get(url[int(cmsg.content)])
+
+            time.sleep(1)
+            browser.find_element_by_xpath('//*[@id="_unitConverter"]/div[1]/div[2]/div/div[1]/div[1]/a[1]').click()
+
+            soup = BeautifulSoup(browser.page_source, 'html.parser')
+            print_list = soup.select("ul.first._unitFromList")[0].text
+
+            ready = []
+            ready = print_list.split(' ')
+
+            trans_choose = discord.Embed(
+                title="단위 변환",
+                description='-----------------------------------\n'
+                            '입력할 단위를 입력해주세요.\n'
+                             '-----------------------------------',
+                color=0xFF9900
+            )
+
+            unit_list = []
+            count = 1
+            for temp in range(len(ready)):
+                try:
+                    if ready[temp] == '':
+                        continue
+                    if ready[temp][0] == '(':
+                        continue
+
+                    if ready[temp + 1][0] == '(':
+                        trans_choose.add_field(name=f'{count}. {ready[temp]}', value=ready[temp + 1], inline=False)
+                        unit_list.append(ready[temp] + ready[temp + 1])
+                    else:
+                        trans_choose.add_field(name=f'{count}. {ready[temp]}', value='.', inline=False)
+                        unit_list.append(ready[temp])
+                    count += 1
+                except:
+                    if ready[temp] != '':
+                        trans_choose.add_field(name=f'{count}. {ready[temp]}', value='.', inline=False)
+
+            trans_choose.set_footer(text='-------------------------------------------\n'
+                                         "(제한시간 : 60초)")
+
+            await timemsg.delete()
+            trans_choose_msg = await message.channel.send(embed=trans_choose)
+
+            try:
+                cmsg = await client.wait_for("message", check=check, timeout=60)
+
+                browser.find_element_by_xpath(f'//*[@id="_unitConverter"]/div[1]/div[2]/div/div[1]/div[1]/div/ul[1]/li[{cmsg.content}]/a').click()
+                await trans_choose_msg.delete()
+
+                trans_input_embed = discord.Embed(
+                    title='단위변환',
+                    description='----------------------------------- \n변환할 값을 입력해주세요. \n-----------------------------------',
+                    color=0xFF9900
+                )
+                trans_input_embed.set_footer(text="(제한시간 : 60초)")
+                trans_input_msg = await message.channel.send(embed=trans_input_embed)
+
+                try:
+                    tmsg = await client.wait_for("message", check=check, timeout=60)
+
+                    await trans_input_msg.delete()
+                    browser.find_element_by_xpath('//*[@id="_unitConverter"]/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/input').send_keys(Keys.CONTROL, "a")
+                    browser.find_element_by_xpath('//*[@id="_unitConverter"]/div[1]/div[2]/div/div[1]/div[2]/div[1]/div/input').send_keys(tmsg.content)
+
+                    time.sleep(1)
+                    soup = BeautifulSoup(browser.page_source, "html.parser")
+                    trans_unit_msg = soup.select("div.cont_area._totalUnitLayer")[0].text
+
+                    isnot = 0 #괄호가 끝날 때 까지 체크
+                    istext = 0
+                    slice_start = 0
+                    trans_unit_list = []
+                    for i in range(len(trans_unit_msg)):
+                        if (trans_unit_msg[i] == '('):
+                            isnot = 1
+
+                        if (not trans_unit_msg[i].isdigit() and istext == 0 and trans_unit_msg[i] != '.' and trans_unit_msg[i] != '-' and trans_unit_msg[i] != 'e'):
+                            istext = 1
+
+                        elif (trans_unit_msg[i].isdigit() and istext == 1 and isnot == 0):
+                            if (not (trans_unit_msg[i] == '2' and (trans_unit_msg[i - 1] == 'm' or trans_unit_msg[i - 1] == 'H'))):
+                                trans_unit_list.append(trans_unit_msg[slice_start:i])
+                                slice_start = i
+                                istext = 0
+
+                        elif (trans_unit_msg[i] == ')'):
+                            isnot = 0
+                    trans_unit_list.append(trans_unit_msg[slice_start:])
+
+                    #단위변환 임베드 출력
+                    trans_result_embed = discord.Embed(
+                        title='단위변환',
+                        description=f'{tmsg.content} {unit_list[int(cmsg.content) - 1]}',
+                        color=0xFF9900
+                    )
+                    name = ''
+                    value = ''
+                    for temp in trans_unit_list:
+                        for i in range(len(temp)):
+                            if (not temp[i].isdigit() and temp[i] != '.' and temp[i] != '-' and temp[i] != 'e'):
+                                value = temp[0:i]
+                                name = temp[i:]
+                                break
+                        trans_result_embed.add_field(name=name, value=f'```{value}```')
+
+                    await message.channel.send(embed=trans_result_embed)
+
+                except asyncio.exceptions.TimeoutError:
+                    await trans_input_msg.delete()
+                    await message.channel.send(embed=Create_Timeout_Embed(4))
+
+
+            except asyncio.exceptions.TimeoutError:
+                await trans_choose_msg.delete()
+                await message.channel.send(embed=Create_Timeout_Embed(4))
+
+        except asyncio.exceptions.TimeoutError:
+            await choosemsg.delete()
+            await message.channel.send(embed=Create_Timeout_Embed(4))
+    
     if message.content.startswith("!과제"):
         command_embed = discord.Embed(
             title = '봇 명령어 목록',
